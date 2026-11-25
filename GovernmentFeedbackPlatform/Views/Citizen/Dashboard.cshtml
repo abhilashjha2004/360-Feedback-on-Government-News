@@ -1,0 +1,155 @@
+@model GovernmentFeedbackPlatform.ViewModels.CitizenDashboardViewModel
+
+@{
+    ViewData["Title"] = "Citizen Dashboard";
+}
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-3 border-bottom">
+        <div>
+            <h3 class="fw-bold mb-1" style="color:#1e3a5f;">
+                <i class="fa-solid fa-gauge-high me-2 text-warning"></i>Citizen Dashboard
+            </h3>
+            <p class="text-muted small mb-0">Welcome back, <strong>@Model.User?.FullName</strong> &bull; Region: @(Model.User?.State ?? "National")</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="History" class="btn btn-outline-primary btn-sm">
+                <i class="fa-solid fa-clock-rotate-left me-1"></i>My Feedback History
+            </a>
+            <a asp-controller="News" asp-action="Index" class="btn btn-warning btn-sm text-dark fw-semibold" style="background:#ff9933;">
+                <i class="fa-solid fa-newspaper me-1"></i>Browse News
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 text-center py-3 h-100" style="border-left: 4px solid #1e3a5f !important;">
+                <div class="card-body">
+                    <h2 class="fw-bold mb-0" style="color:#1e3a5f;">@Model.TotalFeedbacks</h2>
+                    <span class="small text-muted text-uppercase">Total Reviews Given</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 text-center py-3 h-100" style="border-left: 4px solid #ff9933 !important;">
+                <div class="card-body">
+                    <h2 class="fw-bold mb-0 text-warning">@Model.AverageRating.ToString("F1")</h2>
+                    <span class="small text-muted text-uppercase">Average Star Rating</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 text-center py-3 h-100" style="border-left: 4px solid #28a745 !important;">
+                <div class="card-body">
+                    <h2 class="fw-bold mb-0 text-success">@Model.PositiveCount</h2>
+                    <span class="small text-muted text-uppercase">Positive Opinions</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 text-center py-3 h-100" style="border-left: 4px solid #dc3545 !important;">
+                <div class="card-body">
+                    <h2 class="fw-bold mb-0 text-danger">@Model.NegativeCount</h2>
+                    <span class="small text-muted text-uppercase">Critical Reviews</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Feedback Given (Col-7) -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0" style="color:#1e3a5f;">
+                        <i class="fa-solid fa-list-check me-2 text-warning"></i>My Recent Reviews
+                    </h5>
+                    <a asp-action="History" class="small text-decoration-none">View All</a>
+                </div>
+                <div class="card-body p-4">
+                    @if (!Model.RecentFeedbacks.Any())
+                    {
+                        <div class="text-center py-4">
+                            <i class="fa-solid fa-comment-slash fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-3">You haven't submitted any feedback yet.</p>
+                            <a asp-controller="News" asp-action="Index" class="btn btn-sm btn-primary" style="background:#1e3a5f;">
+                                Review Regional News
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var fb in Model.RecentFeedbacks)
+                            {
+                                <div class="p-3 border rounded-3 bg-light">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="fw-bold mb-0 text-truncate" style="max-width:350px;">
+                                            <a asp-controller="News" asp-action="Details" asp-route-id="@fb.NewsStoryId" class="text-decoration-none" style="color:#1e3a5f;">
+                                                @(fb.NewsStory?.Title ?? "News Story")
+                                            </a>
+                                        </h6>
+                                        <span class="small text-muted">@fb.CreatedAt.ToString("dd MMM yyyy")</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div>
+                                            @for (int s = 1; s <= 5; s++)
+                                            {
+                                                <i class="fa-solid fa-star @(s <= fb.Rating ? "text-warning" : "text-muted")" style="font-size:0.75rem;"></i>
+                                            }
+                                        </div>
+                                        <span class="badge @(fb.UserSentiment.ToString() == "Positive" ? "bg-success" : fb.UserSentiment.ToString() == "Negative" ? "bg-danger" : "bg-warning text-dark") small">
+                                            @fb.UserSentiment
+                                        </span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(fb.Comment))
+                                    {
+                                        <p class="small text-muted mb-0">"@fb.Comment"</p>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest News to Review (Col-5) -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white py-3 px-4">
+                    <h5 class="fw-bold mb-0" style="color:#1e3a5f;">
+                        <i class="fa-solid fa-bullhorn me-2 text-warning"></i>Stories Needing Feedback
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var news in Model.RecentNews.Take(4))
+                        {
+                            <div class="d-flex gap-3 align-items-center p-2 rounded-3 hover-bg">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center text-white"
+                                     style="width: 48px; height: 48px; background: #1e3a5f; flex-shrink: 0;">
+                                    <i class="fa-solid fa-newspaper"></i>
+                                </div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <h6 class="small fw-bold mb-1 text-truncate">
+                                        <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="text-decoration-none text-dark">
+                                            @news.Title
+                                        </a>
+                                    </h6>
+                                    <span class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-map-pin me-1 text-danger"></i>@(news.State ?? "National")</span>
+                                </div>
+                                <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="btn btn-sm btn-outline-warning text-dark flex-shrink-0" style="font-size:0.75rem;">
+                                    Review
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

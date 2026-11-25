@@ -1,0 +1,100 @@
+@model GovernmentFeedbackPlatform.Models.Feedback
+
+@{
+    ViewData["Title"] = "Edit Feedback";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h4 class="fw-bold mb-0" style="color:#1e3a5f;">
+                    <i class="fa-solid fa-pen-to-square me-2 text-warning"></i>Edit Your Feedback
+                </h4>
+                <a asp-action="History" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa-solid fa-arrow-left me-1"></i>Back to History
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-light py-3 px-4 border-bottom">
+                    <span class="small text-muted text-uppercase fw-semibold">Target News Story:</span>
+                    <h6 class="fw-bold text-navy mb-0">@(Model.NewsStory?.Title ?? "News Story")</h6>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="EditFeedback" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+
+                        <!-- Rating -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase" style="color:#1e3a5f;">Rating (1 to 5 Stars) *</label>
+                            <div class="d-flex gap-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <input type="radio" id="edit-star-@i" name="rating" value="@i" @(Model.Rating == i ? "checked" : "") class="btn-check" />
+                                    <label for="edit-star-@i" class="btn btn-outline-warning text-dark px-3 py-2">
+                                        <i class="fa-solid fa-star text-warning"></i> @i
+                                    </label>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Sentiment -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase" style="color:#1e3a5f;">Sentiment *</label>
+                            <div class="d-flex gap-2">
+                                <input type="radio" class="btn-check" name="userSentiment" id="edit-sent-pos" value="Positive" @(Model.UserSentiment.ToString() == "Positive" ? "checked" : "") />
+                                <label class="btn btn-outline-success px-3 py-2" for="edit-sent-pos">
+                                    <i class="fa-solid fa-thumbs-up me-1"></i> Positive
+                                </label>
+
+                                <input type="radio" class="btn-check" name="userSentiment" id="edit-sent-neu" value="Neutral" @(Model.UserSentiment.ToString() == "Neutral" ? "checked" : "") />
+                                <label class="btn btn-outline-warning text-dark px-3 py-2" for="edit-sent-neu">
+                                    <i class="fa-solid fa-minus me-1"></i> Neutral
+                                </label>
+
+                                <input type="radio" class="btn-check" name="userSentiment" id="edit-sent-neg" value="Negative" @(Model.UserSentiment.ToString() == "Negative" ? "checked" : "") />
+                                <label class="btn btn-outline-danger px-3 py-2" for="edit-sent-neg">
+                                    <i class="fa-solid fa-thumbs-down me-1"></i> Negative
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Feedback Category -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase" style="color:#1e3a5f;">Category Dimension</label>
+                            <select name="feedbackCategory" class="form-select">
+                                <option value="Policy Impact" selected="@(Model.FeedbackCategory == "Policy Impact")">Policy Impact</option>
+                                <option value="Implementation" selected="@(Model.FeedbackCategory == "Implementation")">Implementation</option>
+                                <option value="Regional Relevance" selected="@(Model.FeedbackCategory == "Regional Relevance")">Regional Relevance</option>
+                                <option value="Transparency" selected="@(Model.FeedbackCategory == "Transparency")">Transparency</option>
+                                <option value="General Opinion" selected="@(Model.FeedbackCategory == "General Opinion")">General Opinion</option>
+                            </select>
+                        </div>
+
+                        <!-- Comment -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase" style="color:#1e3a5f;">Comment</label>
+                            <textarea name="comment" class="form-control" rows="3">@Model.Comment</textarea>
+                        </div>
+
+                        <!-- Suggestions -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase" style="color:#1e3a5f;">Suggestions</label>
+                            <textarea name="suggestions" class="form-control" rows="2">@Model.Suggestions</textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                            <a asp-action="History" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary" style="background:#1e3a5f; border-color:#1e3a5f;">
+                                <i class="fa-solid fa-floppy-disk me-1"></i>Update Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

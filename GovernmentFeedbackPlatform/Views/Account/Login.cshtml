@@ -1,0 +1,80 @@
+@model GovernmentFeedbackPlatform.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Citizen Login";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #1e3a5f 0%, #12253f 100%); border-bottom: 3px solid #ff9933;">
+                    <i class="fa-solid fa-landmark fa-2x mb-2 text-warning"></i>
+                    <h4 class="fw-bold mb-0">Sign In to GovFeedback360</h4>
+                    <p class="small text-white-50 mb-0">Citizen and Administrative Access Portal</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty] != null)
+                    {
+                        <div class="alert alert-danger py-2 small" role="alert">
+                            @Html.ValidationSummary(true, "", new { @class = "mb-0" })
+                        </div>
+                    }
+
+                    <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label small fw-semibold text-muted text-uppercase">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-envelope text-muted"></i></span>
+                                <input asp-for="Email" class="form-control border-start-0" placeholder="citizen@example.com" autofocus />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label small fw-semibold text-muted text-uppercase">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
+                                <input asp-for="Password" class="form-control border-start-0" placeholder="••••••••" />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label small text-muted">Remember me</label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary fw-semibold py-2" style="background:#1e3a5f; border-color:#1e3a5f;">
+                                <i class="fa-solid fa-right-to-bracket me-2"></i>Sign In
+                            </button>
+                        </div>
+
+                        <div class="text-center small text-muted">
+                            Don't have an account? 
+                            <a asp-action="Register" class="fw-semibold text-decoration-none" style="color:#ff9933;">Register as Citizen</a>
+                        </div>
+                    </form>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="alert alert-light border small text-muted mb-0">
+                            <strong><i class="fa-solid fa-info-circle me-1 text-primary"></i>Demo Credentials:</strong><br />
+                            &bull; <strong>Admin:</strong> <code>admin@govfeedback.in</code> / <code>Admin@123456</code><br />
+                            &bull; <strong>Citizen:</strong> <code>priya.sharma@example.com</code> / <code>Citizen@123456</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

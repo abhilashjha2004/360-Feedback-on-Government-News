@@ -1,0 +1,58 @@
+services:
+  # -------------------------------------------------------------
+  # Service 1: Microsoft SQL Server 2022 (Linux Container)
+  # -------------------------------------------------------------
+  govfeedback360-sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: govfeedback360-sqlserver
+    restart: unless-stopped
+    user: root
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-GovFeedback@2026Secure}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - govfeedback360-sql-data:/var/opt/mssql/data
+    networks:
+      - govfeedback360-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'GovFeedback@2026Secure' -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # -------------------------------------------------------------
+  # Service 2: ASP.NET Core MVC Application (GovFeedback360)
+  # -------------------------------------------------------------
+  govfeedback360-app:
+    build:
+      context: .
+      dockerfile: GovernmentFeedbackPlatform/Dockerfile
+    container_name: govfeedback360-app
+    restart: unless-stopped
+    depends_on:
+      govfeedback360-sqlserver:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:5189"
+      ConnectionStrings__DefaultConnection: "Server=govfeedback360-sqlserver,1433;Database=GovernmentFeedbackDB;User Id=sa;Password=${MSSQL_SA_PASSWORD:-GovFeedback@2026Secure};Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=True"
+    ports:
+      - "5189:5189"
+    networks:
+      - govfeedback360-network
+
+# ---------------------------------------------------------------
+# Isolated Application Network & Persistent Volume
+# ---------------------------------------------------------------
+networks:
+  govfeedback360-network:
+    name: govfeedback360-network
+    driver: bridge
+
+volumes:
+  govfeedback360-sql-data:
+    name: govfeedback360-sql-data

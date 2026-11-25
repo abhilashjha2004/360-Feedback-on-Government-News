@@ -1,0 +1,89 @@
+@{
+    ViewData["Title"] = "About GovFeedback360";
+}
+
+<!-- Hero -->
+<section class="py-5 text-white" style="background: linear-gradient(135deg, #1e3a5f 0%, #12253f 100%); border-bottom: 3px solid #ff9933;">
+    <div class="container text-center">
+        <span class="badge bg-warning text-dark px-3 py-2 text-uppercase fw-bold mb-3">Academic Research Prototype</span>
+        <h1 class="display-5 fw-bold mb-3">About GovFeedback360</h1>
+        <p class="lead max-w-700 mx-auto opacity-75">
+            A Web-based Platform for Collecting 360-Degree Feedback on Government of India News Stories from Regional Media
+        </p>
+    </div>
+</section>
+
+<!-- Content -->
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <h3 class="fw-bold mb-3" style="color:#1e3a5f;">Project Overview</h3>
+            <p class="text-muted leading-relaxed">
+                Across India's diverse linguistic and cultural landscape, government policies, development schemes, and public welfare initiatives are reported extensively through regional media outlets in multiple languages. However, there has traditionally been a lack of a structured, multi-dimensional mechanism to systematically gauge how citizens across different states perceive, interpret, and experience the outcomes of these announcements.
+            </p>
+            <p class="text-muted leading-relaxed">
+                <strong>GovFeedback360 (SIH1329)</strong> bridges this critical feedback loop. By establishing a centralized 360-degree feedback platform, citizens from any state or union territory can review regional news coverage, evaluate government programs across five structured dimensions (Rating, Sentiment, Opinion, Suggestions, and Category), and voice constructive suggestions.
+            </p>
+
+            <h4 class="fw-bold mt-5 mb-3" style="color:#1e3a5f;">Key Academic Objectives</h4>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-light h-100">
+                        <h6 class="fw-bold text-navy"><i class="fa-solid fa-layer-group text-warning me-2"></i>Multi-Source Aggregation</h6>
+                        <p class="small text-muted mb-0">Aggregate news stories across regional media with metadata indexing (State, Language, Sector, Ministry).</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-light h-100">
+                        <h6 class="fw-bold text-navy"><i class="fa-solid fa-chart-pie text-success me-2"></i>360° Sentiment Analysis</h6>
+                        <p class="small text-muted mb-0">Capture dual-layer sentiment: citizen self-reported opinion alongside automated keyword sentiment detection.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-light h-100">
+                        <h6 class="fw-bold text-navy"><i class="fa-solid fa-map-location-dot text-primary me-2"></i>Regional Media Analytics</h6>
+                        <p class="small text-muted mb-0">Compare public reception state-by-state to help communication strategists identify regional sentiment trends.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-light h-100">
+                        <h6 class="fw-bold text-navy"><i class="fa-solid fa-user-shield text-danger me-2"></i>Responsible Moderation</h6>
+                        <p class="small text-muted mb-0">Transparent administrative moderation with duplicate prevention and audit logging to maintain integrity.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning border-0 shadow-sm" role="alert">
+                <h6 class="fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>Academic Disclaimer</h6>
+                <p class="small mb-0">
+                    This software platform is developed exclusively as an individual academic laboratory prototype for <strong>INT402 – Modern Web Programming Tools and Techniques</strong>. It is not an official Government of India portal, nor is it endorsed by the Press Information Bureau (PIB). Fictional and curated sample news stories are included solely for technical testing and demonstration.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background:#f8fafc; border-left: 4px solid #1e3a5f !important;">
+                <h5 class="fw-bold mb-3" style="color:#1e3a5f;">Academic Information</h5>
+                <ul class="list-unstyled small text-muted mb-0">
+                    <li class="mb-2"><strong>Project ID:</strong> SIH1329</li>
+                    <li class="mb-2"><strong>Course:</strong> INT402 Modern Web Programming</li>
+                    <li class="mb-2"><strong>Framework:</strong> ASP.NET Core 10.0 MVC</li>
+                    <li class="mb-2"><strong>Language:</strong> C# 13 (.NET 10 LTS)</li>
+                    <li class="mb-2"><strong>Database:</strong> Microsoft SQL Server 2022</li>
+                    <li class="mb-2"><strong>ORM:</strong> Entity Framework Core 10</li>
+                    <li class="mb-2"><strong>Security:</strong> ASP.NET Core Identity &amp; RBAC</li>
+                    <li class="mb-2"><strong>API:</strong> RESTful API with Swagger / OpenAPI</li>
+                </ul>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center text-white" style="background:#1e3a5f;">
+                <i class="fa-solid fa-comments fa-3x text-warning mb-3"></i>
+                <h5 class="fw-bold">Ready to participate?</h5>
+                <p class="small text-white-50 mb-3">Browse published news stories and share your feedback on regional governance.</p>
+                <a asp-controller="News" asp-action="Index" class="btn btn-warning fw-semibold text-dark btn-sm">
+                    Browse News Stories
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

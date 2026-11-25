@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GovFeedback360</title>
+
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--navy);">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-5" asp-controller="Home" asp-action="Index">
+                <i class="fa-solid fa-landmark me-2 text-saffron"></i>GovFeedback360
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                    aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="fa-solid fa-house me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="News" asp-action="Index">
+                            <i class="fa-solid fa-newspaper me-1"></i>News
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="About">
+                            <i class="fa-solid fa-circle-info me-1"></i>About
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
+                    @if (!User.Identity!.IsAuthenticated)
+                    {
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-light btn-sm" asp-controller="Account" asp-action="Login">
+                                <i class="fa-solid fa-right-to-bracket me-1"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-saffron btn-sm" asp-controller="Account" asp-action="Register">
+                                <i class="fa-solid fa-user-plus me-1"></i>Register
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item me-2">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">
+                                    <span class="badge bg-warning text-dark"><i class="fa-solid fa-shield-halved me-1"></i>ADMIN</span>
+                                </a>
+                            </li>
+                        }
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-circle-user me-1"></i>
+                                @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Citizen" asp-action="Dashboard">
+                                        <i class="fa-solid fa-gauge me-2 text-navy"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                        <i class="fa-solid fa-user me-2 text-navy"></i>Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Citizen" asp-action="History">
+                                        <i class="fa-solid fa-clock-rotate-left me-2 text-navy"></i>History
+                                    </a>
+                                </li>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Admin" asp-action="Dashboard">
+                                            <i class="fa-solid fa-gauge-high me-2 text-warning"></i>Admin Dashboard
+                                        </a>
+                                    </li>
+                                }
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3" id="flash-messages">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                <div>@TempData["Success"]</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                <div>@TempData["Error"]</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3 mt-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Brand Description -->
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fa-solid fa-landmark me-2" style="color: var(--saffron);"></i>GovFeedback360
+                    </h5>
+                    <p class="text-white-50 small">
+                        A 360-degree government news feedback platform empowering citizens to engage with
+                        governance, share opinions, and participate in building a transparent democracy.
+                    </p>
+                    <div class="mt-3">
+                        <span class="badge me-1" style="background-color: var(--saffron);">SIH 2024</span>
+                        <span class="badge bg-secondary">Student Project</span>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-md-3 offset-md-1">
+                    <h6 class="fw-bold text-uppercase mb-3" style="color: var(--saffron);">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a asp-controller="Home" asp-action="Index" class="text-white-50 text-decoration-none footer-link">
+                                <i class="fa-solid fa-chevron-right me-1 small"></i>Home
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-controller="News" asp-action="Index" class="text-white-50 text-decoration-none footer-link">
+                                <i class="fa-solid fa-chevron-right me-1 small"></i>News
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-controller="Home" asp-action="About" class="text-white-50 text-decoration-none footer-link">
+                                <i class="fa-solid fa-chevron-right me-1 small"></i>About
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-controller="Account" asp-action="Login" class="text-white-50 text-decoration-none footer-link">
+                                <i class="fa-solid fa-chevron-right me-1 small"></i>Login
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-controller="Account" asp-action="Register" class="text-white-50 text-decoration-none footer-link">
+                                <i class="fa-solid fa-chevron-right me-1 small"></i>Register
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Academic Disclaimer -->
+                <div class="col-md-4">
+                    <h6 class="fw-bold text-uppercase mb-3" style="color: var(--saffron);">Academic Disclaimer</h6>
+                    <div class="border border-warning rounded p-3 small text-white-50">
+                        <i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>
+                        This platform is a <strong class="text-white">student project (SIH 2024)</strong> and is
+                        <strong class="text-warning">NOT affiliated with or endorsed by the Government of India</strong>.
+                        It is created solely for academic and demonstration purposes.
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary mt-4" />
+
+            <!-- Copyright -->
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <small class="text-white-50">
+                        &copy; @DateTime.Now.Year GovFeedback360. All rights reserved. | Smart India Hackathon 2024
+                    </small>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                    <small class="text-white-50">
+                        <i class="fa-solid fa-code me-1"></i>Built with
+                        <i class="fa-brands fa-microsoft ms-1 me-1"></i>ASP.NET Core MVC
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

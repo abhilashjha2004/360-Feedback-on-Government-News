@@ -1,0 +1,408 @@
+@model GovernmentFeedbackPlatform.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var positivePercent = Model.Stats.TotalFeedbacks > 0
+        ? (Model.Stats.PositiveFeedbacks * 100.0 / Model.Stats.TotalFeedbacks) : 0;
+    var negativePercent = Model.Stats.TotalFeedbacks > 0
+        ? (Model.Stats.NegativeFeedbacks * 100.0 / Model.Stats.TotalFeedbacks) : 0;
+}
+
+<style>
+    .kpi-card { border-left: 4px solid #ff9933; transition: transform .15s; }
+    .kpi-card:hover { transform: translateY(-3px); }
+    .kpi-icon { font-size: 2rem; color: #1e3a5f; opacity: .7; }
+    .kpi-value { font-size: 1.8rem; font-weight: 700; color: #1e3a5f; }
+    .kpi-label { font-size: .8rem; color: #6c757d; text-transform: uppercase; letter-spacing: .05em; }
+    .section-title { color: #1e3a5f; border-bottom: 2px solid #ff9933; padding-bottom: .3rem; margin-bottom: 1rem; }
+    .chart-card { border: none; box-shadow: 0 2px 10px rgba(30,58,95,.1); }
+    .badge-published { background-color: #28a745; }
+    .badge-draft { background-color: #ffc107; color: #333; }
+    .table-hover tbody tr:hover { background-color: rgba(255,153,51,.07); }
+</style>
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0" style="color:#1e3a5f;"><i class="fas fa-tachometer-alt me-2" style="color:#ff9933;"></i>Admin Dashboard</h2>
+        <small class="text-muted">GovFeedback360 Control Panel &mdash; @DateTime.Now.ToString("dddd, dd MMMM yyyy")</small>
+    </div>
+    <a asp-action="CreateNews" asp-controller="Admin" class="btn btn-sm" style="background:#ff9933;color:#fff;">
+        <i class="fas fa-plus me-1"></i> New Story
+    </a>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-2 col-sm-4 col-6">
+        <div class="card kpi-card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="kpi-value">@Model.Stats.TotalUsers</div>
+                    <div class="kpi-label">Citizens</div>
+                </div>
+                <i class="fas fa-users kpi-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-6">
+        <div class="card kpi-card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="kpi-value">@Model.Stats.TotalNews</div>
+                    <div class="kpi-label">News Stories</div>
+                </div>
+                <i class="fas fa-newspaper kpi-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-6">
+        <div class="card kpi-card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="kpi-value">@Model.Stats.TotalFeedbacks</div>
+                    <div class="kpi-label">Total Feedbacks</div>
+                </div>
+                <i class="fas fa-comments kpi-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-6">
+        <div class="card kpi-card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="kpi-value">@Model.Stats.AverageRating.ToString("F1")</div>
+                    <div class="kpi-label">Avg Rating</div>
+                </div>
+                <i class="fas fa-star kpi-icon" style="color:#ff9933;opacity:1;"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-6">
+        <div class="card kpi-card h-100 p-3" style="border-left-color:#28a745;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="kpi-value text-success">@positivePercent.ToString("F1")%</div>
+                    <div class="kpi-label">Positive</div>
+                </div>
+                <i class="fas fa-thumbs-up kpi-icon text-success" style="opacity:1;"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-6">
+        <div class="card kpi-card h-100 p-3" style="border-left-color:#dc3545;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="kpi-value text-danger">@negativePercent.ToString("F1")%</div>
+                    <div class="kpi-label">Negative</div>
+                </div>
+                <i class="fas fa-thumbs-down kpi-icon text-danger" style="opacity:1;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mb-4" style="border:none;box-shadow:0 2px 10px rgba(30,58,95,.1);">
+    <div class="card-body">
+        <h6 class="section-title"><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-action="CreateNews" asp-controller="Admin" class="btn btn-sm" style="background:#1e3a5f;color:#fff;">
+                <i class="fas fa-plus me-1"></i> Create News
+            </a>
+            <a asp-action="ManageNews" asp-controller="Admin" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-newspaper me-1"></i> Manage News
+            </a>
+            <a asp-action="ManageFeedback" asp-controller="Admin" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-comments me-1"></i> Manage Feedback
+            </a>
+            <a asp-action="Analytics" asp-controller="Admin" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-chart-line me-1"></i> Analytics
+            </a>
+            <a asp-action="Reports" asp-controller="Admin" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-file-alt me-1"></i> Reports
+            </a>
+            <a asp-action="Users" asp-controller="Admin" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-users-cog me-1"></i> Users
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-header" style="background:#1e3a5f;color:#fff;">
+                <i class="fas fa-chart-pie me-2" style="color:#ff9933;"></i>Sentiment Distribution
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <canvas id="sentimentChart" style="max-height:280px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-header" style="background:#1e3a5f;color:#fff;">
+                <i class="fas fa-map-marker-alt me-2" style="color:#ff9933;"></i>Top States by Feedback
+            </div>
+            <div class="card-body">
+                <canvas id="regionalChart" style="max-height:280px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-header" style="background:#1e3a5f;color:#fff;">
+                <i class="fas fa-chart-line me-2" style="color:#ff9933;"></i>Monthly Feedback Trend
+            </div>
+            <div class="card-body">
+                <canvas id="trendChart" style="max-height:280px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-header" style="background:#1e3a5f;color:#fff;">
+                <i class="fas fa-tags me-2" style="color:#ff9933;"></i>Category Feedback
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" style="max-height:280px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent News -->
+<div class="card mb-4" style="border:none;box-shadow:0 2px 10px rgba(30,58,95,.1);">
+    <div class="card-header d-flex justify-content-between align-items-center" style="background:#1e3a5f;color:#fff;">
+        <span><i class="fas fa-newspaper me-2" style="color:#ff9933;"></i>Recent News Stories</span>
+        <a asp-action="ManageNews" asp-controller="Admin" class="btn btn-sm" style="background:#ff9933;color:#fff;">View All</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead style="background:rgba(30,58,95,.07);">
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>State</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.RecentNews != null && Model.RecentNews.Any())
+                    {
+                        @foreach (var news in Model.RecentNews)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-action="EditNews" asp-controller="Admin" asp-route-id="@news.Id"
+                                       class="text-decoration-none" style="color:#1e3a5f;">
+                                        @(news.Title.Length > 55 ? news.Title.Substring(0, 55) + "…" : news.Title)
+                                    </a>
+                                </td>
+                                <td><span class="badge bg-secondary">@(news.Category?.Name ?? "—")</span></td>
+                                <td>@(news.State ?? "—")</td>
+                                <td>@news.PublishedDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    @if (news.IsPublished)
+                                    {
+                                        <span class="badge bg-success">Published</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Draft</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-3">No news stories yet.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Feedbacks -->
+<div class="card mb-4" style="border:none;box-shadow:0 2px 10px rgba(30,58,95,.1);">
+    <div class="card-header d-flex justify-content-between align-items-center" style="background:#1e3a5f;color:#fff;">
+        <span><i class="fas fa-comments me-2" style="color:#ff9933;"></i>Recent Feedbacks</span>
+        <a asp-action="ManageFeedback" asp-controller="Admin" class="btn btn-sm" style="background:#ff9933;color:#fff;">View All</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead style="background:rgba(30,58,95,.07);">
+                    <tr>
+                        <th>User</th>
+                        <th>News Story</th>
+                        <th>Rating</th>
+                        <th>Sentiment</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.RecentFeedbacks != null && Model.RecentFeedbacks.Any())
+                    {
+                        @foreach (var fb in Model.RecentFeedbacks)
+                        {
+                            <tr>
+                                <td>@(fb.User?.FullName ?? "Anonymous")</td>
+                                <td>
+                                    @{
+                                        var newsTitle = fb.NewsStory?.Title ?? "—";
+                                    }
+                                    @(newsTitle.Length > 40 ? newsTitle.Substring(0, 40) + "…" : newsTitle)
+                                </td>
+                                <td>
+                                    @for (int s = 1; s <= 5; s++)
+                                    {
+                                        <i class="fas fa-star @(s <= fb.Rating ? "" : "far fa-star")"
+                                           style="color:#ff9933;font-size:.75rem;"></i>
+                                    }
+                                </td>
+                                <td>
+                                    @switch (fb.Sentiment.ToString())
+                                    {
+                                        case "Positive":
+                                            <span class="badge bg-success">Positive</span>
+                                            break;
+                                        case "Negative":
+                                            <span class="badge bg-danger">Negative</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-warning text-dark">Neutral</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>@fb.SubmittedAt.ToString("dd MMM yyyy")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-3">No feedbacks yet.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    // --- Data from Model ---
+    var sentimentData = {
+        labels: ['Positive', 'Neutral', 'Negative'],
+        datasets: [{
+            data: [@Model.Stats.PositiveFeedbacks, @Model.Stats.NeutralFeedbacks, @Model.Stats.NegativeFeedbacks],
+            backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    };
+
+    var regionalLabels = @Json.Serialize(Model.RegionalStats != null ? Model.RegionalStats.Select(r => r.State).ToList() : new List<string>());
+    var regionalData   = @Json.Serialize(Model.RegionalStats != null ? Model.RegionalStats.Select(r => r.FeedbackCount).ToList() : new List<int>());
+
+    var monthlyLabels  = @Json.Serialize(Model.MonthlyTrends != null ? Model.MonthlyTrends.Select(m => m.Month).ToList() : new List<string>());
+    var monthlyData    = @Json.Serialize(Model.MonthlyTrends != null ? Model.MonthlyTrends.Select(m => m.FeedbackCount).ToList() : new List<int>());
+
+    var categoryLabels = @Json.Serialize(Model.CategoryStats != null ? Model.CategoryStats.Select(c => c.CategoryName).ToList() : new List<string>());
+    var categoryData   = @Json.Serialize(Model.CategoryStats != null ? Model.CategoryStats.Select(c => c.FeedbackCount).ToList() : new List<int>());
+
+    // Sentiment Doughnut
+    new Chart(document.getElementById('sentimentChart'), {
+        type: 'doughnut',
+        data: sentimentData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                title: { display: false }
+            },
+            cutout: '60%'
+        }
+    });
+
+    // Regional Bar
+    new Chart(document.getElementById('regionalChart'), {
+        type: 'bar',
+        data: {
+            labels: regionalLabels,
+            datasets: [{
+                label: 'Feedbacks',
+                data: regionalData,
+                backgroundColor: 'rgba(30,58,95,0.75)',
+                borderColor: '#1e3a5f',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                x: { ticks: { maxRotation: 45 } }
+            }
+        }
+    });
+
+    // Monthly Trend Line
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                label: 'Feedbacks',
+                data: monthlyData,
+                borderColor: '#ff9933',
+                backgroundColor: 'rgba(255,153,51,0.15)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#ff9933'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // Category Bar
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'bar',
+        data: {
+            labels: categoryLabels,
+            datasets: [{
+                label: 'Feedbacks',
+                data: categoryData,
+                backgroundColor: 'rgba(255,153,51,0.75)',
+                borderColor: '#ff9933',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                x: { ticks: { maxRotation: 45 } }
+            }
+        }
+    });
+})();
+</script>
+}

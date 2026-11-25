@@ -1,0 +1,132 @@
+@model GovernmentFeedbackPlatform.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Citizen Profile";
+    var indianStates = new[]
+    {
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa",
+        "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala",
+        "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland",
+        "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+        "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu & Kashmir", "Ladakh"
+    };
+
+    var languages = new[]
+    {
+        "Assamese", "Bengali", "English", "Gujarati", "Hindi", "Kannada", "Malayalam",
+        "Marathi", "Odia", "Punjabi", "Tamil", "Telugu", "Urdu"
+    };
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3 class="fw-bold mb-0" style="color:#1e3a5f;">
+                    <i class="fa-solid fa-id-card me-2 text-warning"></i>Citizen Profile
+                </h3>
+                <a asp-controller="Citizen" asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa-solid fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 pb-4 mb-4 border-bottom">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold fs-3"
+                             style="width: 64px; height: 64px; background: #1e3a5f;">
+                            @(string.IsNullOrEmpty(Model.FullName) ? "U" : Model.FullName[0].ToString().ToUpper())
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1" style="color:#1e3a5f;">@Model.FullName</h5>
+                            <span class="text-muted small"><i class="fa-solid fa-envelope me-1"></i>@Model.Email</span>
+                            <span class="badge bg-light text-dark border ms-2"><i class="fa-solid fa-clock me-1"></i>Member since @Model.MemberSince.ToString("MMM yyyy")</span>
+                        </div>
+                    </div>
+
+                    <form asp-action="Profile" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="Email" />
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label asp-for="FullName" class="form-label small fw-semibold text-muted text-uppercase">Full Name *</label>
+                                <input asp-for="FullName" class="form-control" />
+                                <span asp-validation-for="FullName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="State" class="form-label small fw-semibold text-muted text-uppercase">State / UT</label>
+                                <select asp-for="State" class="form-select">
+                                    <option value="">Select State</option>
+                                    @foreach (var s in indianStates)
+                                    {
+                                        <option value="@s" selected="@(Model.State == s)">@s</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Language" class="form-label small fw-semibold text-muted text-uppercase">Preferred Language</label>
+                                <select asp-for="Language" class="form-select">
+                                    <option value="">Select Language</option>
+                                    @foreach (var l in languages)
+                                    {
+                                        <option value="@l" selected="@(Model.Language == l)">@l</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="AgeGroup" class="form-label small fw-semibold text-muted text-uppercase">Age Group</label>
+                                <select asp-for="AgeGroup" class="form-select">
+                                    <option value="">Select Age</option>
+                                    <option value="18-25" selected="@(Model.AgeGroup == "18-25")">18-25</option>
+                                    <option value="26-35" selected="@(Model.AgeGroup == "26-35")">26-35</option>
+                                    <option value="36-50" selected="@(Model.AgeGroup == "36-50")">36-50</option>
+                                    <option value="50+" selected="@(Model.AgeGroup == "50+")">50+</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Gender" class="form-label small fw-semibold text-muted text-uppercase">Gender</label>
+                                <select asp-for="Gender" class="form-select">
+                                    <option value="">Select Gender</option>
+                                    <option value="Female" selected="@(Model.Gender == "Female")">Female</option>
+                                    <option value="Male" selected="@(Model.Gender == "Male")">Male</option>
+                                    <option value="Other" selected="@(Model.Gender == "Other")">Other</option>
+                                    <option value="Prefer not to say" selected="@(Model.Gender == "Prefer not to say")">Prefer not to say</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Occupation" class="form-label small fw-semibold text-muted text-uppercase">Occupation</label>
+                                <input asp-for="Occupation" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <a asp-controller="Citizen" asp-action="Dashboard" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary" style="background:#1e3a5f; border-color:#1e3a5f;">
+                                <i class="fa-solid fa-floppy-disk me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

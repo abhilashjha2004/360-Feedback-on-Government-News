@@ -1,0 +1,154 @@
+@{
+    ViewData["Title"] = "Reports & Data Exports";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var regionalStats = ViewBag.RegionalStats as List<GovernmentFeedbackPlatform.ViewModels.RegionalStat> ?? new();
+    var topNews = ViewBag.TopNews as dynamic ?? new List<dynamic>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1" style="color:#1e3a5f;">
+            <i class="fa-solid fa-file-export me-2 text-warning"></i>Reports &amp; Data Exports
+        </h3>
+        <p class="text-muted small mb-0">Generate live analytical summaries and download raw datasets for policy research.</p>
+    </div>
+    <span class="badge bg-warning text-dark px-3 py-2 fw-semibold">Real-Time Database Data</span>
+</div>
+
+<!-- Download Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-4" style="border-top: 4px solid #1e3a5f !important;">
+            <div class="card-body">
+                <i class="fa-solid fa-file-csv fa-3x mb-3 text-primary"></i>
+                <h5 class="fw-bold text-navy mb-2">News Stories Dataset</h5>
+                <p class="text-muted small mb-4">Export all published and draft news stories, states, categories, and aggregated feedback scores.</p>
+                <a asp-action="ExportNewsCsv" class="btn btn-primary w-100 fw-semibold" style="background:#1e3a5f; border-color:#1e3a5f;">
+                    <i class="fa-solid fa-download me-2"></i>Download News CSV
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-4" style="border-top: 4px solid #ff9933 !important;">
+            <div class="card-body">
+                <i class="fa-solid fa-comments fa-3x mb-3 text-warning"></i>
+                <h5 class="fw-bold text-navy mb-2">360° Feedback Dataset</h5>
+                <p class="text-muted small mb-4">Export all citizen ratings, sentiment classifications, comments, and policy recommendations.</p>
+                <a asp-action="ExportFeedbackCsv" class="btn btn-warning w-100 text-dark fw-semibold" style="background:#ff9933; border-color:#ff9933;">
+                    <i class="fa-solid fa-download me-2"></i>Download Feedback CSV
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-4" style="border-top: 4px solid #28a745 !important;">
+            <div class="card-body">
+                <i class="fa-solid fa-users fa-3x mb-3 text-success"></i>
+                <h5 class="fw-bold text-navy mb-2">User Demographics Dataset</h5>
+                <p class="text-muted small mb-4">Export registered citizen demographics, regional distribution, and activity levels.</p>
+                <a asp-action="ExportUsersCsv" class="btn btn-success w-100 fw-semibold">
+                    <i class="fa-solid fa-download me-2"></i>Download Users CSV
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top 5 Most Discussed News Stories -->
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="card-header bg-white py-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+        <h5 class="fw-bold mb-0 text-navy">
+            <i class="fa-solid fa-fire me-2 text-warning"></i>Top Discussed Regional News Stories
+        </h5>
+        <span class="small text-muted">Ranked by total citizen feedback</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead style="background:#f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <tr>
+                    <th class="ps-4" style="color:#1e3a5f;">Rank</th>
+                    <th style="color:#1e3a5f;">News Title</th>
+                    <th style="color:#1e3a5f;">Category</th>
+                    <th style="color:#1e3a5f;">State / Region</th>
+                    <th style="color:#1e3a5f;">Feedbacks</th>
+                    <th class="pe-4" style="color:#1e3a5f;">Avg Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int rank = 1;
+                }
+                @foreach (var item in topNews)
+                {
+                    <tr>
+                        <td class="ps-4">
+                            <span class="badge rounded-circle p-2" style="background:#1e3a5f; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">
+                                @(rank++)
+                            </span>
+                        </td>
+                        <td class="fw-semibold text-navy">
+                            <a asp-controller="News" asp-action="Details" asp-route-id="@item.Id" target="_blank" class="text-decoration-none" style="color:#1e3a5f;">
+                                @item.Title
+                            </a>
+                        </td>
+                        <td><span class="badge bg-secondary-subtle text-secondary-emphasis">@item.Category</span></td>
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                <i class="fa-solid fa-map-pin me-1 text-danger"></i>@item.State
+                            </span>
+                        </td>
+                        <td><strong class="text-navy">@item.FeedbacksCount</strong> reviews</td>
+                        <td class="pe-4">
+                            @for (int s = 1; s <= 5; s++)
+                            {
+                                <i class="fa-solid fa-star @(s <= Math.Round((double)item.AvgRating) ? "text-warning" : "text-muted")" style="font-size:0.75rem;"></i>
+                            }
+                            <span class="ms-1 small text-muted">@item.AvgRating.ToString("F1")</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Feedback by State -->
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="card-header bg-white py-3 px-4 border-bottom">
+        <h5 class="fw-bold mb-0 text-navy">
+            <i class="fa-solid fa-map-location-dot me-2 text-warning"></i>Regional Feedback Distribution
+        </h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead style="background:#f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <tr>
+                    <th class="ps-4" style="color:#1e3a5f;">State / UT</th>
+                    <th style="color:#1e3a5f;">Published News</th>
+                    <th style="color:#1e3a5f;">Citizen Reviews</th>
+                    <th class="pe-4" style="color:#1e3a5f;">Avg Sentiment Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in regionalStats)
+                {
+                    <tr>
+                        <td class="ps-4 fw-semibold text-navy">
+                            <i class="fa-solid fa-location-dot me-2 text-danger"></i>@row.State
+                        </td>
+                        <td>@row.NewsCount stories</td>
+                        <td><strong>@row.FeedbackCount</strong> submissions</td>
+                        <td class="pe-4">
+                            @for (int s = 1; s <= 5; s++)
+                            {
+                                <i class="fa-solid fa-star @(s <= Math.Round(row.AverageRating) ? "text-warning" : "text-muted")" style="font-size:0.75rem;"></i>
+                            }
+                            <span class="ms-1 small text-muted">@row.AverageRating.ToString("F1")</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

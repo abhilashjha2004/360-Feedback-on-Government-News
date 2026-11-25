@@ -1,0 +1,142 @@
+@model GovernmentFeedbackPlatform.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Citizen Registration";
+    var indianStates = new[]
+    {
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa",
+        "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala",
+        "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland",
+        "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+        "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu & Kashmir", "Ladakh"
+    };
+
+    var languages = new[]
+    {
+        "Assamese", "Bengali", "English", "Gujarati", "Hindi", "Kannada", "Malayalam",
+        "Marathi", "Odia", "Punjabi", "Tamil", "Telugu", "Urdu"
+    };
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #1e3a5f 0%, #12253f 100%); border-bottom: 3px solid #ff9933;">
+                    <i class="fa-solid fa-user-plus fa-2x mb-2 text-warning"></i>
+                    <h4 class="fw-bold mb-0">Citizen Registration</h4>
+                    <p class="small text-white-50 mb-0">Join the 360° Regional Media Public Opinion Platform</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty] != null)
+                    {
+                        <div class="alert alert-danger py-2 small" role="alert">
+                            @Html.ValidationSummary(true, "", new { @class = "mb-0" })
+                        </div>
+                    }
+
+                    <form asp-action="Register" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label asp-for="FullName" class="form-label small fw-semibold text-muted text-uppercase">Full Name *</label>
+                                <input asp-for="FullName" class="form-control" placeholder="e.g. Priya Sharma" />
+                                <span asp-validation-for="FullName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Email" class="form-label small fw-semibold text-muted text-uppercase">Email Address *</label>
+                                <input asp-for="Email" class="form-control" placeholder="priya.sharma@example.com" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Password" class="form-label small fw-semibold text-muted text-uppercase">Password *</label>
+                                <input asp-for="Password" class="form-control" placeholder="Min 6 characters" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="ConfirmPassword" class="form-label small fw-semibold text-muted text-uppercase">Confirm Password *</label>
+                                <input asp-for="ConfirmPassword" class="form-control" placeholder="Re-enter password" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="State" class="form-label small fw-semibold text-muted text-uppercase">State / UT</label>
+                                <select asp-for="State" class="form-select">
+                                    <option value="">Select State</option>
+                                    @foreach (var s in indianStates)
+                                    {
+                                        <option value="@s">@s</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="State" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Language" class="form-label small fw-semibold text-muted text-uppercase">Preferred Language</label>
+                                <select asp-for="Language" class="form-select">
+                                    <option value="">Select Language</option>
+                                    @foreach (var l in languages)
+                                    {
+                                        <option value="@l">@l</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Language" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="AgeGroup" class="form-label small fw-semibold text-muted text-uppercase">Age Group</label>
+                                <select asp-for="AgeGroup" class="form-select">
+                                    <option value="">Select Age</option>
+                                    <option value="18-25">18-25</option>
+                                    <option value="26-35">26-35</option>
+                                    <option value="36-50">36-50</option>
+                                    <option value="50+">50+</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Gender" class="form-label small fw-semibold text-muted text-uppercase">Gender</label>
+                                <select asp-for="Gender" class="form-select">
+                                    <option value="">Select Gender</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Other">Other</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Occupation" class="form-label small fw-semibold text-muted text-uppercase">Occupation</label>
+                                <input asp-for="Occupation" class="form-control" placeholder="e.g. Student, Engineer" />
+                            </div>
+                        </div>
+
+                        <div class="form-text small text-muted my-3">
+                            <i class="fa-solid fa-shield-halved me-1 text-success"></i> Your feedback will be aggregated anonymously for regional research and public sentiment analysis.
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-warning fw-semibold py-2 text-dark" style="background:#ff9933; border-color:#ff9933;">
+                                <i class="fa-solid fa-user-check me-2"></i>Create Account
+                            </button>
+                        </div>
+
+                        <div class="text-center small text-muted mt-3">
+                            Already registered? 
+                            <a asp-action="Login" class="fw-semibold text-decoration-none" style="color:#1e3a5f;">Sign In</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

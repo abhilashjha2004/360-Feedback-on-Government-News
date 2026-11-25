@@ -1,0 +1,114 @@
+@model List<GovernmentFeedbackPlatform.Models.Feedback>
+
+@{
+    ViewData["Title"] = "My Feedback History";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-3 border-bottom">
+        <div>
+            <h3 class="fw-bold mb-1" style="color:#1e3a5f;">
+                <i class="fa-solid fa-clock-rotate-left me-2 text-warning"></i>My Feedback History
+            </h3>
+            <p class="text-muted small mb-0">Review, update or manage all public opinions you have submitted.</p>
+        </div>
+        <a asp-controller="News" asp-action="Index" class="btn btn-primary btn-sm" style="background:#1e3a5f;">
+            <i class="fa-solid fa-plus me-1"></i>Review More News
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
+            <i class="fa-solid fa-comments fa-3x text-muted mb-3"></i>
+            <h5 class="fw-bold text-navy">No Feedbacks Submitted Yet</h5>
+            <p class="text-muted small mb-4">Start browsing government-related news stories from regional media to share your feedback.</p>
+            <div>
+                <a asp-controller="News" asp-action="Index" class="btn btn-warning fw-semibold text-dark">
+                    Browse News Stories
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background:#f8fafc; border-bottom: 2px solid #e2e8f0;">
+                        <tr>
+                            <th class="ps-4" style="color:#1e3a5f;">News Story</th>
+                            <th style="color:#1e3a5f;">Rating</th>
+                            <th style="color:#1e3a5f;">Sentiment</th>
+                            <th style="color:#1e3a5f;">Category</th>
+                            <th style="color:#1e3a5f;">Submitted Date</th>
+                            <th class="text-end pe-4" style="color:#1e3a5f;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var fb in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-semibold text-dark">
+                                        <a asp-controller="News" asp-action="Details" asp-route-id="@fb.NewsStoryId" class="text-decoration-none" style="color:#1e3a5f;">
+                                            @(fb.NewsStory?.Title ?? $"News #{fb.NewsStoryId}")
+                                        </a>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(fb.Comment))
+                                    {
+                                        <small class="text-muted text-truncate d-block" style="max-width:350px;">
+                                            "@fb.Comment"
+                                        </small>
+                                    }
+                                </td>
+                                <td>
+                                    @for (int s = 1; s <= 5; s++)
+                                    {
+                                        <i class="fa-solid fa-star @(s <= fb.Rating ? "text-warning" : "text-muted")" style="font-size:0.75rem;"></i>
+                                    }
+                                    <span class="ms-1 small fw-bold">@fb.Rating/5</span>
+                                </td>
+                                <td>
+                                    <span class="badge @(fb.UserSentiment.ToString() == "Positive" ? "bg-success" : fb.UserSentiment.ToString() == "Negative" ? "bg-danger" : "bg-warning text-dark")">
+                                        @fb.UserSentiment
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        @(fb.FeedbackCategory ?? "General")
+                                    </span>
+                                </td>
+                                <td class="small text-muted">
+                                    @fb.CreatedAt.ToString("dd MMM yyyy")
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <a asp-action="EditFeedback" asp-route-id="@fb.Id" class="btn btn-sm btn-outline-primary" title="Edit Feedback">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                        <form asp-action="DeleteFeedback" asp-route-id="@fb.Id" method="post" class="d-inline"
+                                              onsubmit="return confirm('Are you sure you want to remove your feedback for this news story?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Feedback">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

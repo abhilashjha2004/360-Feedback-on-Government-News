@@ -1,0 +1,50 @@
+@model List<GovernmentFeedbackPlatform.Models.Category>
+
+@{
+    ViewData["Title"] = "Sector Categories";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1" style="color:#1e3a5f;">
+            <i class="fa-solid fa-tags me-2 text-warning"></i>Government Sector Categories
+        </h3>
+        <p class="text-muted small mb-0">Policy domains and sectoral classification for regional news feedback.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    @foreach (var cat in Model)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="border-top: 4px solid @(cat.ColorHex ?? "#1e3a5f") !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            @if (!string.IsNullOrEmpty(cat.IconClass))
+                            {
+                                <i class="@cat.IconClass fa-lg" style="color:@(cat.ColorHex ?? "#1e3a5f");"></i>
+                            }
+                            <h5 class="fw-bold mb-0 text-navy">@cat.Name</h5>
+                        </div>
+                        <span class="badge rounded-pill bg-light text-dark border">
+                            @cat.NewsStories.Count Stories
+                        </span>
+                    </div>
+
+                    <p class="text-muted small mb-3">
+                        @(cat.Description ?? "Government sector news classification.")
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top small text-muted">
+                        <span>Status: <strong class="text-success">Active</strong></span>
+                        <a asp-controller="News" asp-action="Index" asp-route-categoryId="@cat.Id" class="text-decoration-none" style="color:#ff9933;">
+                            Browse Stories <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

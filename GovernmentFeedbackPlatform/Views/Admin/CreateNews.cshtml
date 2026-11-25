@@ -1,0 +1,141 @@
+@model GovernmentFeedbackPlatform.Models.NewsStory
+
+@{
+    ViewData["Title"] = "Create News Story";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var categories = ViewBag.Categories as List<GovernmentFeedbackPlatform.Models.Category> ?? new();
+    var indianStates = new[]
+    {
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa",
+        "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala",
+        "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland",
+        "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+        "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu & Kashmir", "Ladakh"
+    };
+    var languages = new[]
+    {
+        "Assamese", "Bengali", "English", "Gujarati", "Hindi", "Kannada", "Malayalam",
+        "Marathi", "Odia", "Punjabi", "Tamil", "Telugu", "Urdu"
+    };
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h3 class="fw-bold mb-1" style="color:#1e3a5f;">
+            <i class="fa-solid fa-square-plus me-2 text-warning"></i>Create News Story
+        </h3>
+        <p class="text-muted small mb-0">Publish a government news announcement or regional development update.</p>
+    </div>
+    <a asp-action="ManageNews" class="btn btn-outline-secondary btn-sm">
+        <i class="fa-solid fa-arrow-left me-1"></i>Back to Stories
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-body p-4 p-md-5">
+        <form asp-action="CreateNews" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3">
+                <!-- Title -->
+                <div class="col-md-12">
+                    <label asp-for="Title" class="form-label small fw-semibold text-muted text-uppercase">Headline / Title *</label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g. National Highway Expansion Approved in Maharashtra" required />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <!-- Category, State, Language -->
+                <div class="col-md-4">
+                    <label asp-for="CategoryId" class="form-label small fw-semibold text-muted text-uppercase">Category *</label>
+                    <select asp-for="CategoryId" class="form-select" required>
+                        <option value="">Select Category</option>
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c.Id">@c.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="State" class="form-label small fw-semibold text-muted text-uppercase">State / Region</label>
+                    <select asp-for="State" class="form-select">
+                        <option value="">National / Pan-India</option>
+                        @foreach (var s in indianStates)
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Language" class="form-label small fw-semibold text-muted text-uppercase">Language</label>
+                    <select asp-for="Language" class="form-select">
+                        <option value="English">English</option>
+                        @foreach (var l in languages)
+                        {
+                            <option value="@l">@l</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Media Source & Source URL -->
+                <div class="col-md-6">
+                    <label asp-for="MediaSource" class="form-label small fw-semibold text-muted text-uppercase">Media Outlet / Publisher</label>
+                    <input asp-for="MediaSource" class="form-control" placeholder="e.g. PIB Delhi, The Hindu, Dainik Jagran" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="SourceUrl" class="form-label small fw-semibold text-muted text-uppercase">Original Story URL</label>
+                    <input asp-for="SourceUrl" class="form-control" placeholder="https://..." />
+                </div>
+
+                <!-- Image URL -->
+                <div class="col-md-12">
+                    <label asp-for="ImageUrl" class="form-label small fw-semibold text-muted text-uppercase">Banner Image URL</label>
+                    <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
+                </div>
+
+                <!-- Summary -->
+                <div class="col-md-12">
+                    <label asp-for="Summary" class="form-label small fw-semibold text-muted text-uppercase">Executive Summary</label>
+                    <textarea asp-for="Summary" class="form-control" rows="2" placeholder="Brief 1-2 sentence overview of the policy or announcement..."></textarea>
+                </div>
+
+                <!-- Full Content -->
+                <div class="col-md-12">
+                    <label asp-for="Content" class="form-label small fw-semibold text-muted text-uppercase">Full Article Content *</label>
+                    <textarea asp-for="Content" class="form-control" rows="6" placeholder="Detailed content of the news story..." required></textarea>
+                    <span asp-validation-for="Content" class="text-danger small"></span>
+                </div>
+
+                <!-- Tags -->
+                <div class="col-md-12">
+                    <label asp-for="Tags" class="form-label small fw-semibold text-muted text-uppercase">Tags (Comma-separated)</label>
+                    <input asp-for="Tags" class="form-control" placeholder="infrastructure, highway, connectivity" />
+                </div>
+
+                <!-- Publish Immediately Checkbox -->
+                <div class="col-md-12">
+                    <div class="form-check form-switch mt-2">
+                        <input asp-for="IsPublished" class="form-check-input" type="checkbox" id="publishSwitch" checked />
+                        <label class="form-check-label fw-semibold text-navy" for="publishSwitch">
+                            Publish immediately to citizen public feed
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                <a asp-action="ManageNews" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" style="background:#1e3a5f; border-color:#1e3a5f;">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>Save &amp; Create Story
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

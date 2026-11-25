@@ -1,0 +1,150 @@
+@model GovernmentFeedbackPlatform.Models.NewsStory
+
+@{
+    ViewData["Title"] = "Edit News Story";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var categories = ViewBag.Categories as List<GovernmentFeedbackPlatform.Models.Category> ?? new();
+    var indianStates = new[]
+    {
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa",
+        "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala",
+        "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland",
+        "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+        "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu & Kashmir", "Ladakh"
+    };
+    var languages = new[]
+    {
+        "Assamese", "Bengali", "English", "Gujarati", "Hindi", "Kannada", "Malayalam",
+        "Marathi", "Odia", "Punjabi", "Tamil", "Telugu", "Urdu"
+    };
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h3 class="fw-bold mb-1" style="color:#1e3a5f;">
+            <i class="fa-solid fa-pen-to-square me-2 text-warning"></i>Edit News Story #@Model.Id
+        </h3>
+        <p class="text-muted small mb-0">Update metadata, regional coverage or content.</p>
+    </div>
+    <a asp-action="ManageNews" class="btn btn-outline-secondary btn-sm">
+        <i class="fa-solid fa-arrow-left me-1"></i>Back to Stories
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-body p-4 p-md-5">
+        <form asp-action="EditNews" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedByUserId" />
+            <input type="hidden" asp-for="CreatedAt" />
+
+            <div class="row g-3">
+                <!-- Title -->
+                <div class="col-md-12">
+                    <label asp-for="Title" class="form-label small fw-semibold text-muted text-uppercase">Headline / Title *</label>
+                    <input asp-for="Title" class="form-control" required />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <!-- Category, State, Language -->
+                <div class="col-md-4">
+                    <label asp-for="CategoryId" class="form-label small fw-semibold text-muted text-uppercase">Category *</label>
+                    <select asp-for="CategoryId" class="form-select" required>
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c.Id" selected="@(Model.CategoryId == c.Id)">@c.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="State" class="form-label small fw-semibold text-muted text-uppercase">State / Region</label>
+                    <select asp-for="State" class="form-select">
+                        <option value="">National / Pan-India</option>
+                        @foreach (var s in indianStates)
+                        {
+                            <option value="@s" selected="@(Model.State == s)">@s</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Language" class="form-label small fw-semibold text-muted text-uppercase">Language</label>
+                    <select asp-for="Language" class="form-select">
+                        @foreach (var l in languages)
+                        {
+                            <option value="@l" selected="@(Model.Language == l)">@l</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Media Source & Source URL -->
+                <div class="col-md-6">
+                    <label asp-for="MediaSource" class="form-label small fw-semibold text-muted text-uppercase">Media Outlet / Publisher</label>
+                    <input asp-for="MediaSource" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="SourceUrl" class="form-label small fw-semibold text-muted text-uppercase">Original Story URL</label>
+                    <input asp-for="SourceUrl" class="form-control" />
+                </div>
+
+                <!-- Image URL -->
+                <div class="col-md-12">
+                    <label asp-for="ImageUrl" class="form-label small fw-semibold text-muted text-uppercase">Banner Image URL</label>
+                    <input asp-for="ImageUrl" class="form-control" />
+                </div>
+
+                <!-- Summary -->
+                <div class="col-md-12">
+                    <label asp-for="Summary" class="form-label small fw-semibold text-muted text-uppercase">Executive Summary</label>
+                    <textarea asp-for="Summary" class="form-control" rows="2"></textarea>
+                </div>
+
+                <!-- Full Content -->
+                <div class="col-md-12">
+                    <label asp-for="Content" class="form-label small fw-semibold text-muted text-uppercase">Full Article Content *</label>
+                    <textarea asp-for="Content" class="form-control" rows="6" required></textarea>
+                    <span asp-validation-for="Content" class="text-danger small"></span>
+                </div>
+
+                <!-- Tags -->
+                <div class="col-md-12">
+                    <label asp-for="Tags" class="form-label small fw-semibold text-muted text-uppercase">Tags</label>
+                    <input asp-for="Tags" class="form-control" />
+                </div>
+
+                <!-- Published / Archived Checkboxes -->
+                <div class="col-md-6">
+                    <div class="form-check form-switch mt-2">
+                        <input asp-for="IsPublished" class="form-check-input" type="checkbox" id="editPublishSwitch" />
+                        <label class="form-check-label fw-semibold text-navy" for="editPublishSwitch">
+                            Published (Visible to citizens)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-check form-switch mt-2">
+                        <input asp-for="IsArchived" class="form-check-input" type="checkbox" id="editArchiveSwitch" />
+                        <label class="form-check-label fw-semibold text-muted" for="editArchiveSwitch">
+                            Archived (Hidden from active feed)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                <a asp-action="ManageNews" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" style="background:#1e3a5f; border-color:#1e3a5f;">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

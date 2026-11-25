@@ -1,0 +1,171 @@
+@model GovernmentFeedbackPlatform.ViewModels.FeedbackManagementViewModel
+
+@{
+    ViewData["Title"] = "Feedback Moderation";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1" style="color:#1e3a5f;">
+            <i class="fa-solid fa-comments me-2 text-warning"></i>Feedback Moderation &amp; Review
+        </h3>
+        <p class="text-muted small mb-0">Audit citizen ratings, verify public comments, and moderate feedback transparently.</p>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <select name="sentiment" class="form-select form-select-sm">
+                    <option value="">All Sentiments</option>
+                    <!option value="Positive" @(Model.FilterSentiment == "Positive" ? "selected" : "")>Positive</!option>
+                    <!option value="Neutral" @(Model.FilterSentiment == "Neutral" ? "selected" : "")>Neutral</!option>
+                    <!option value="Negative" @(Model.FilterSentiment == "Negative" ? "selected" : "")>Negative</!option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="moderated" class="form-select form-select-sm">
+                    <option value="">All Statuses</option>
+                    <!option value="false" @(Model.FilterModerated == false ? "selected" : "")>Pending Moderation</!option>
+                    <!option value="true" @(Model.FilterModerated == true ? "selected" : "")>Moderated</!option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-sm w-100 btn-primary" style="background:#1e3a5f;">
+                    <i class="fa-solid fa-filter me-1"></i>Filter
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a asp-action="ManageFeedback" class="btn btn-sm w-100 btn-outline-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Feedbacks Table -->
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead style="background:#f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <tr>
+                    <th class="ps-4" style="color:#1e3a5f;">ID</th>
+                    <th style="color:#1e3a5f;">Citizen</th>
+                    <th style="color:#1e3a5f;">News Story</th>
+                    <th style="color:#1e3a5f;">Rating</th>
+                    <th style="color:#1e3a5f;">Sentiment</th>
+                    <th style="color:#1e3a5f;">Comment &amp; Suggestion</th>
+                    <th style="color:#1e3a5f;">Status</th>
+                    <th class="text-end pe-4" style="color:#1e3a5f;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Feedbacks.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">No feedbacks found matching current filters.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var fb in Model.Feedbacks)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold text-muted">#@fb.Id</td>
+                            <td>
+                                <div class="fw-semibold text-dark">@(fb.User?.FullName ?? "Citizen")</div>
+                                <small class="text-muted"><i class="fa-solid fa-map-pin me-1 text-danger"></i>@(fb.User?.State ?? "Unknown")</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-truncate" style="max-width:220px;">
+                                    <a asp-controller="News" asp-action="Details" asp-route-id="@fb.NewsStoryId" target="_blank" class="text-decoration-none" style="color:#1e3a5f;">
+                                        @(fb.NewsStory?.Title ?? $"Story #{fb.NewsStoryId}")
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                @for (int s = 1; s <= 5; s++)
+                                {
+                                    <i class="fa-solid fa-star @(s <= fb.Rating ? "text-warning" : "text-muted")" style="font-size:0.75rem;"></i>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge @(fb.UserSentiment.ToString() == "Positive" ? "bg-success" : fb.UserSentiment.ToString() == "Negative" ? "bg-danger" : "bg-warning text-dark")">
+                                    @fb.UserSentiment
+                                </span>
+                            </td>
+                            <td>
+                                <div class="small text-truncate" style="max-width:250px;" title="@fb.Comment">
+                                    @(string.IsNullOrEmpty(fb.Comment) ? "—" : fb.Comment)
+                                </div>
+                                @if (!string.IsNullOrEmpty(fb.Suggestions))
+                                {
+                                    <small class="text-muted text-truncate d-block" style="max-width:250px;" title="@fb.Suggestions">
+                                        <i class="fa-solid fa-lightbulb text-warning me-1"></i>@fb.Suggestions
+                                    </small>
+                                }
+                            </td>
+                            <td>
+                                @if (!fb.IsModerated)
+                                {
+                                    <span class="badge bg-secondary">Pending</span>
+                                }
+                                else if (fb.IsApproved)
+                                {
+                                    <span class="badge bg-success">Approved</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Flagged</span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-inline-flex gap-1">
+                                    <!-- Approve -->
+                                    <form asp-action="ModerateFeedback" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@fb.Id" />
+                                        <input type="hidden" name="approve" value="true" />
+                                        <input type="hidden" name="note" value="Approved by moderator" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Approve">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                    </form>
+
+                                    <!-- Reject -->
+                                    <form asp-action="ModerateFeedback" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@fb.Id" />
+                                        <input type="hidden" name="approve" value="false" />
+                                        <input type="hidden" name="note" value="Content flagged during audit" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Flag/Reject">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+@if (Model.TotalPages > 1)
+{
+    <nav class="d-flex justify-content-center">
+        <ul class="pagination pagination-sm">
+            @for (int p = 1; p <= Model.TotalPages; p++)
+            {
+                <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-action="ManageFeedback" asp-route-page="@p"
+                       asp-route-sentiment="@Model.FilterSentiment" asp-route-moderated="@Model.FilterModerated">@p</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
